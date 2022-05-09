@@ -24,6 +24,8 @@ Options:
                         Example: a=3 r=5
                         A is in the word on position 3
                         R is in the word on position 5
+    -h, --help          Help
+    -l, --letters       List all available letters. Has priority over --absent 
     -p, --present       Define which letters are in the word but are not in the
                         given position(s).
                         Example: a=3,4 r=5
@@ -85,6 +87,11 @@ composeCorrectArray() {
 }
 
 getRemainingLetters() {
+    # -l | --letters has priority over --absent
+    if [[ ! -z $letters ]]; then
+        return
+    fi
+
     local absent=$(echo $1 | sed "s/./&\\\|/g")
     letters="abcdefghijklmnopqrstuvwxyz"
     letters=$(echo $letters | sed "s/$absent//g")
@@ -155,9 +162,9 @@ generatePermutations() {
                         # check if the correct letter is in its correct position
                         # we should not count a letter if its a correct letter
                         # but not in its correct position
-                        if [[ ${correct[$i]} -eq ${perm:$i:1} ]]; then
+                        if [[ ${correct[$((i+1))]} == ${perm:$i:1} ]]; then
                             # avoid duplicates in perm_known_letters
-                            if [[ $known_letters != *${perm:$i:1}* ]];then
+                            if [[ $perm_known_letters != *${perm:$i:1}* ]];then
                                 perm_known_letters="$perm_known_letters${perm:$i:1}"
                             fi
                         fi
@@ -249,6 +256,10 @@ while [ "$1" != "" ]; do
         -c | --correct )
             shift
             composeCorrectArray $1
+            ;;
+        -l | --letters )
+            shift
+            letters=$1
             ;;
         -p | --present )
             shift
