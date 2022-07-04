@@ -1,5 +1,22 @@
 #!/usr/bin/bash
 
+#
+# todo: invalid results when a letter is in both the correct and the present
+# array (there might be a duplicate letter, but we still want to exclude
+# that letters position in the present array)
+#
+# other bug: wordle -a "euand" -p "s=1,5 i=3 t=4 p=1" -f
+# gives results where s on first position and letters are missing
+# probably issue with letters which are excluded from multiple positions
+#
+# something also might be wrong when either all letters are known (in the 
+# present array) or if multiple letters are known not to be present in the
+# same array). Example: wordle -a "suibordcp" -p "a=3 t=4 e=5 l=2 m=4" -f 
+#
+# Probably related with the above issues, but this fails too (word should
+# be delve): wordle "suitboarhg" "e=2,5" "d=5,3"
+#
+
 which aspell &> /dev/null
 
 if [ $? -eq 1 ]; then
